@@ -1,0 +1,182 @@
+<html>
+<style>
+    body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    #pardot-container {
+        display: flex !important;
+        justify-content: center;
+        padding-top: 100px;
+        min-width: 450px
+    }
+
+    #pardot-form-wrapper {
+        padding: 50px;
+        background-color: #FFF;
+        border-radius: 10px;
+        box-shadow: 2px 3px 1px #ddd;
+        min-width: 450px
+    }
+
+    #cisco-spark-link:hover,
+    #cisco-spark-link:active {
+        background-color: #61b5b5 !important;
+        text-decoration: none;
+    }
+
+
+    .label {
+        margin-bottom: 5px;
+        color: #669999;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+
+    .form-control:focus {
+        border-color: #66afe9;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    }
+
+    .form-control::-moz-placeholder {
+        color: #999;
+        opacity: 1;
+    }
+
+    .form-control:-ms-input-placeholder {
+        color: #999;
+    }
+
+    .form-control::-webkit-input-placeholder {
+        color: #999;
+    }
+
+    .form-control::-ms-expand {
+        background-color: transparent;
+        border: 0;
+    }
+
+    .form-control[disabled],
+    .form-control[readonly],
+    fieldset[disabled] .form-control {
+        background-color: #eee;
+        opacity: 1;
+    }
+
+    .form-control[disabled],
+    fieldset[disabled] .form-control {
+        cursor: not-allowed;
+    }
+
+    textarea.form-control {
+        height: auto;
+    }
+</style>
+
+<body style="background-color: #f0f0f0;
+background-image: url('https://www.transparenttextures.com/patterns/black-thread-light.png');">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.extend({
+                getUrlVars: function () {
+                    var vars = [],
+                        hash;
+                    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split(
+                        '&');
+                    for (var i = 0; i < hashes.length; i++) {
+                        hash = hashes[i].split('=');
+                        vars.push(hash[0]);
+                        vars[hash[0]] = hash[1];
+                    }
+                    return vars;
+                },
+                getUrlVar: function (name) {
+                    return $.getUrlVars()[name];
+                }
+            });
+            // Getting URL var by its name
+            var ciscoSparkCode = $.getUrlVar('code');
+
+            if (ciscoSparkCode != undefined) {
+                $("#cisco-spark-link, #cisco-wrapper").attr("style", "display:none");
+                $.ajax({
+                    type: 'POST',
+                    url: 'https://api.ciscospark.com/v1/access_token?grant_type=authorization_code&client_id=Cdc2e6610d98cbfcca6dd54ef4da7c3243cbc5da36316dce4c499604e9b826f15&client_secret=4e2c39ad013341dc56855ca7fd98b396ccb2a7bf4fdc6dedb0f329ee3a557c7e&redirect_uri=https%3A%2F%2Femilytlam.com%2Fpardot.html&code=' +
+                        ciscoSparkCode,
+                    contentType: "application/x-www-form-urlencoded",
+                    success: function (data) {
+                        var accessToken = data.access_token;
+                        console.log('got access token', accessToken);
+                        $("#pardot-container, #pardot-form-wrapper, #pardot-form").attr("style",
+                            "display:block");
+                        $('#submitButton').on('click', function () {
+                            $.ajax({
+                                type: 'POST',
+                                url: 'https://w8q33aywq4.execute-api.us-east-1.amazonaws.com/prod/starterFunction',
+                                data: JSON.stringify({
+                                    "email": $('#email').val(),
+                                    "password": $("#password").val(),
+                                    "user_key": $("#user_key").val(),
+                                    "ciscoToken": data.access_token
+                                }),
+                                contentType: "application/json",
+                                success: function (data) {
+                                    alert(
+                                        "You have successfully completed this form and will be redirected to Cisco Spark."
+                                    );
+                                    $(location).attr('href',
+                                        'https://web.ciscospark.com');
+                                },
+                                error: function (err) {
+                                    alert("Sorry, there was an error.")
+                                }
+                            });
+                            return false;
+                        });
+                    }
+                });
+
+            }
+        });
+    </script>
+
+    <div id="pardot-container" style="display:flex;justify-content: center;padding-top: 100px;min-width:450px">
+        <div id="pardot-form-wrapper" style="display:none">
+            <form id="pardot-form" class="form-group" style="display:none">
+                <div class="label">E-mail:</div><input id="email" class="form-control" type="text" name="email" required><br>
+                <div class="label">Password:</div> <input id="password" class="form-control" type="password" name="password" required><br>
+                <div class="label">API User Key:</div> <input id="user_key" class="form-control" type="text" name="user_key" required><br>
+                <button id="submitButton" class="form-control" type="submit" style="background-color: #66cccc;color: #FFF;font-size: 28px;height: auto;">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div style="display:flex;justify-content: center;padding-top: 100px;">
+        <div id="cisco-wrapper" style="text-align: center;background-color: #FFF;padding: 30px;border-radius: 10px;box-shadow: 0 1px 3px 0 rgba(26,26,26,.18)"><img src="https://web.ciscospark.com/images/spark-logo-with-name.png" style="width: 150px;margin-bottom: 20px;"><br>
+            <a style="background-color:#66cccc;color:#FFF;padding:20px 40px;border-radius:10px;text-decoration:none;display: inline-block;" id="cisco-spark-link" href="https://api.ciscospark.com/v1/authorize?client_id=Cdc2e6610d98cbfcca6dd54ef4da7c3243cbc5da36316dce4c499604e9b826f15&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Femilytlam.com%2Fpardot.html&amp;scope=spark%3Aall%20spark%3Akms">Sign into Cisco Spark</a>
+        </div>
+    </div>
+
+</body>
+
+</html>

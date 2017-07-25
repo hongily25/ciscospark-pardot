@@ -1,0 +1,8 @@
+{
+  "name": "first-apex-project",
+  "description": "",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::913515893053:role/first-apex-project_lambda_function",
+  "environment": {}
+}

@@ -1,0 +1,112 @@
+<html>
+<!--Load the AJAX API-->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $.extend({
+        getUrlVars: function () {
+            var vars = [],
+                hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split(
+                '&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        },
+        getUrlVar: function (name) {
+            return $.getUrlVars()[name];
+        }
+    });
+    // Get labels
+
+    var labels = $.getUrlVar('labels');
+    labels = decodeURI(labels);
+    var labelsArr = labels.split(',');
+
+
+    // Parse string to int
+    var values = $.getUrlVar('values');
+    values = decodeURI(values);
+    var valuesArr = values.split(',');
+    for (let i = 0; i < valuesArr.length; i++) {
+        valuesArr[i] = parseInt(valuesArr[i])
+    }
+
+
+    //Development
+    /*
+    var labelsArr = ["klsdjf","sdkfj","sdkfjsdkf","ksdfj","lksdjf"];
+    var valuesArr = [235325,32423,23423,4566,346346];
+    */
+
+    console.log("labels:", labelsArr);
+    console.log("values:", valuesArr);
+
+    var collection = [];
+    var pair = [];
+
+    for (let i = 0; i < labelsArr.length; i++) {
+        pair.push(labelsArr[i]);
+        pair.push(valuesArr[i]);
+    }
+
+    for (let i = 0; i < labelsArr.length; i++) {
+        collection[i] = [labelsArr[i], valuesArr[i]];
+    }
+
+    console.log("collection:", collection);
+    console.log("pair:", pair);
+
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', {
+        'packages': ['corechart']
+    });
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+
+    // Callback that creates and populates a data table,
+    // instantiates the pie chart, passes in the data and
+    // draws it.
+    function drawChart() {
+
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Company');
+        data.addColumn('number', 'Value');
+        data.addRows(collection);
+
+        // Set chart options
+        var options = {
+            'title': 'Q3 Opportunities',
+            'width': 600,
+            'height': 450,
+            'is3D': true,
+        };
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+
+        var bar = new google.visualization.BarChart(document.getElementById('bar_div'));
+        bar.draw(data, options);
+    }
+</script>
+
+<body style="background-color: #f0f0f0;
+background-image: url('https://www.transparenttextures.com/patterns/black-thread-light.png');">
+
+    <!--Div that will hold the pie chart-->
+    <div style="display:flex;justify-content:center;align-items:center;height: 100%;">
+        <div style="display: flex; border: 1px solid #ddd; box-shadow: 1px 3px 5px -1px rgba(219,199,219,1);">
+            <div id="chart_div"></div>
+            <div id="bar_div"></div>
+        </div>
+    </div>
+
+</body>
+
+</html>
