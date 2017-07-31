@@ -1,4 +1,4 @@
-# starterFunction
+# Pardot Integration with Cisco Spark
 
 
 index.js is the lambda function to process the webhook from Cisco Spark.
