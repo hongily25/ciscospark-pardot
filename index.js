@@ -3,10 +3,6 @@
 console.log('Loading function');
 const request = require('request');
 
-
-/* Cisco Spark Client secret: 7605da2b7bf8538768d99e67a9317d9aa08c805a13f13d54d00d6edbafdf8360 */
-/* Pardot API Key: bc43de5fbe7057f5ac6846b71d6354f7 */
-
 exports.handler = (event, context, callback) => {
     console.log("event: ", event);
 
